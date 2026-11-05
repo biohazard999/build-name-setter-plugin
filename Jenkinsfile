@@ -3,6 +3,7 @@
 buildPlugin(
   useContainerAgent: true,
   failFast: false,  
-  platforms: ['linux', 'windows'],
-  jdkVersions: [11, 17, 21]
-)
+  configurations: [
+    [platform: 'linux', jdk: 25],
+    [platform: 'windows', jdk: 21],
+])

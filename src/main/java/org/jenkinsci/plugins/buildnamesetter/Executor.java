@@ -7,7 +7,7 @@ import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.EnvironmentVarSetter;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
@@ -60,13 +60,10 @@ public class Executor {
     }
 
     public void setVariable(String nameTemplate) throws MacroEvaluationException {
-        if (!(run instanceof AbstractBuild)) {
-            return;
+        if (run instanceof AbstractBuild abstractBuild) {
+            EnvironmentVarSetter.setVar(abstractBuild, EnvironmentVarSetter.buildDisplayNameVar,
+                    evaluateMacro(nameTemplate), listener.getLogger());
         }
-
-        AbstractBuild abstractBuild = (AbstractBuild) run;
-        EnvironmentVarSetter.setVar(abstractBuild, EnvironmentVarSetter.buildDisplayNameVar,
-                evaluateMacro(nameTemplate), listener.getLogger());
     }
 
     public String evaluateMacro(String template) throws MacroEvaluationException {

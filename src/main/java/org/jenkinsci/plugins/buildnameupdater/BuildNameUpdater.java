@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,9 +19,8 @@ import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
-import javax.servlet.ServletException;
 import jenkins.MasterToSlaveFileCallable;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.buildnamesetter.Executor;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
@@ -156,11 +156,11 @@ public class BuildNameUpdater extends Builder {
         private static final long serialVersionUID = 1L;
 
         @Override
-        @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "Rely on the default system encoding - legacy behavior")
-        public String invoke(File file, VirtualChannel channel) throws IOException, InterruptedException {
+        public String invoke(File file, VirtualChannel channel) throws IOException {
             if (file.getAbsoluteFile().exists()) {
                 LOGGER.log(Level.INFO, "File is found, reading...");
-                try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsoluteFile()))) {
+                try (BufferedReader br = new BufferedReader(
+                        new FileReader(file.getAbsoluteFile(), StandardCharsets.UTF_8))) {
                     return br.readLine();
                 }
             } else {
@@ -177,7 +177,7 @@ public class BuildNameUpdater extends Builder {
         }
 
         @SuppressWarnings("unused")
-        public FormValidation doCheckName(@QueryParameter String value) throws IOException, ServletException {
+        public FormValidation doCheckName(@QueryParameter String value) {
             if (value.isEmpty())
                 return FormValidation.error("Please set a file path");
             return FormValidation.ok();
